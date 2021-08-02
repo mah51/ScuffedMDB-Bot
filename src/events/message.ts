@@ -1,8 +1,6 @@
 import type { Message } from 'discord.js';
 import BotClient from '../structures/client';
 
-
-
 export async function run(client: BotClient, message: Message) {
     if (message.author.bot || (message.guild && !message.guild.available))
         return;
