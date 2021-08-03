@@ -12,6 +12,9 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2019",
+    "paths": {
+      "@config": ["./src/config.json"]
+    },
     "sourceMap": true
   },
 

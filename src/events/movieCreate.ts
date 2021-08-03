@@ -29,8 +29,27 @@ export async function run(client: BotClient, data: WebhookData) {
       {
         name: 'Genres',
         value: `\`${genres}\``,
+        inline: true,
       },
-
+      {
+        name: '\u200b',
+        value: `\u200b`,
+        inline: true,
+      },
+      {
+        name: 'Links',
+        value: `[View on IMDB](https://imdb.com/title/${
+          movie.imdbID
+        })\n[View on ${process.env.WEBSITE_NAME || 'ScuffedMDB'}](${
+          process.env.WEB_URL || 'https://movie.michael-hall.me'
+        }/movie/${movie._id} )`,
+        inline: true,
+      },
+      {
+        name: 'Info',
+        value: `Budget : \`${budget}\`\nRevenue : \`${revenue}\``,
+        inline: true,
+      },
       {
         name: 'Release Date',
         value:
@@ -46,11 +65,6 @@ export async function run(client: BotClient, data: WebhookData) {
       {
         name: 'Runtime',
         value: `\`${movie.runtime.toString()} mins\``,
-        inline: true,
-      },
-      {
-        name: 'Info',
-        value: `Budget : \`${budget}\`\nRevenue : \`${revenue}\``,
         inline: true,
       }
     )
