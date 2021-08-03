@@ -3,31 +3,36 @@ import CommandHandler from './commandHandler';
 import { Client, Collection } from 'discord.js';
 import type { Snowflake } from 'discord.js';
 import { Functions } from './functions';
-import { PrismaClient } from '@prisma/client';
+import Logger from '../utils/logger';
+import APIClient from './APIClient';
 
 interface ConfigObject {
-    embedColor: string;
-    ownerID: Snowflake;
-    prefix: string;
-    version: string;
+  embedColor: `#${string}`;
+  ownerID: Snowflake;
+  prefix: string;
+  serverID: Snowflake;
+  version: string;
 }
 
 export interface BotEvent {
-    run: (...args: any) => void;
+  run: (...args: any) => void;
 }
 
-const prisma = new PrismaClient();
-
 export default class BotClient extends Client {
-    public commands = new CommandHandler();
+  public commands = new CommandHandler();
 
-    public config: ConfigObject = config;
+  public config: ConfigObject = {
+    ...config,
+    embedColor: `#${config.embedColor.slice(1)}`,
+  };
 
-    public events = new Collection<string, BotEvent>();
+  public apiClient = new APIClient(this);
 
-    public functions = new Functions();
+  public logger = new Logger();
 
-    public prefixes: { [id: string]: string } = {};
+  public events = new Collection<string, BotEvent>();
 
-    public prisma = prisma;
+  public functions = new Functions();
+
+  public prefixes: { [id: string]: string } = {};
 }

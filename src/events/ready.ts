@@ -1,14 +1,7 @@
 import type BotClient from '../structures/client';
+import chalk from 'chalk';
+import { CategoryChannel } from 'discord.js';
 
 export async function run(client: BotClient) {
-    console.log(`Logged in as ${client.user?.tag}`);
-    await client.prisma.$connect();
-    const test = await client.prisma.user.create({
-        data: {
-            name: 'test',
-            lastName: 'last-name',
-        },
-    });
-
-    console.log(test);
+  client.logger.log(chalk`Logged in as {magenta.bold ${client.user?.tag}}`, 'Ready');
 }

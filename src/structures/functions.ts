@@ -3,6 +3,8 @@ import type {
   Snowflake,
   PermissionString,
   GuildChannel,
+  TextChannel,
+  ThreadChannel,
 } from 'discord.js';
 import type { GuildMessage } from '../constants';
 import { parsedPerms } from '../constants';
@@ -17,7 +19,7 @@ export class Functions {
     desc: string
   ): void {
     if (
-      message.channel.type === 'text' &&
+      message.channel.type !== 'DM' &&
       !message.channel.permissionsFor(message.guild!.me!)!.has('EMBED_LINKS')
     ) {
       message.channel.send(
@@ -27,7 +29,7 @@ export class Functions {
     }
 
     const embed = new MessageEmbed()
-      .setColor(embedColor)
+      .setColor(`#${embedColor.slice(1)}`)
       .setDescription(
         `Argument #${argNum} is missing. It is supposed to be **${desc}**`
       )
@@ -38,7 +40,7 @@ export class Functions {
       .setTimestamp()
       .setTitle(`Argument #${argNum} Missing`);
 
-    message.channel.send(embed);
+    message.channel.send({ embeds: [embed] });
   }
 
   public parseArgs(str: string): string[] {
@@ -61,7 +63,7 @@ export class Functions {
     desc: string
   ): void {
     if (
-      message.channel.type === 'text' &&
+      message.channel.type !== 'DM' &&
       !message.channel.permissionsFor(message.guild!.me!)!.has('EMBED_LINKS')
     ) {
       message.channel.send(
@@ -71,7 +73,7 @@ export class Functions {
     }
 
     const embed = new MessageEmbed()
-      .setColor(embedColor)
+      .setColor(`#${embedColor.slice(1)}`)
       .setDescription(
         `Argument #${argNum} is invalid. Here's what was wrong with it.\n\n**${desc}**`
       )
@@ -82,7 +84,7 @@ export class Functions {
       .setTimestamp()
       .setTitle(`Argument #${argNum} Incorrect`);
 
-    message.channel.send(embed);
+    message.channel.send({ embeds: [embed] });
   }
 
   public async getPrefix(client: BotClient, id: Snowflake): Promise<string> {
@@ -92,16 +94,14 @@ export class Functions {
   public noClientPerms(
     message: Message,
     perms: PermissionString[],
-    channel?: GuildChannel
+    channel?: GuildChannel | TextChannel | ThreadChannel
   ): void {
     const formatted = perms
       .map((p) => `\`${parsedPerms[p as keyof typeof parsedPerms]}\``)
       .join('\n');
     if (channel)
       return void message.channel.send(
-        `I do not have the required permissions in ${
-          channel.type === 'text' ? channel : `**${channel.name}**`
-        }.\nThe permissions are:\n\n${formatted}`
+        `I do not have the required permissions in ${`**${channel.name}**`}.\nThe permissions are:\n\n${formatted}`
       );
     message.channel.send(
       `I do not have the required permissions.\nThe permissions are:\n\n${formatted}`
@@ -111,18 +111,16 @@ export class Functions {
   public noPerms(
     message: Message,
     perms: PermissionString[],
-    channel?: GuildChannel
+    channel?: GuildChannel | TextChannel | ThreadChannel
   ): void {
     const formatted = perms
       .map((p) => `\`${parsedPerms[p as keyof typeof parsedPerms]}\``)
       .join('\n');
     if (channel) {
       message.channel.send(
-        `You do not have the required permissions in ${
-          channel.type === 'text'
-            ? channel
-            : `**${Util.escapeMarkdown(channel.name)}**`
-        }.\nThe permissions are:\n\n${formatted}`
+        `You do not have the required permissions in ${`**${Util.escapeMarkdown(
+          channel.name
+        )}**`}.\nThe permissions are:\n\n${formatted}`
       );
       return;
     }
