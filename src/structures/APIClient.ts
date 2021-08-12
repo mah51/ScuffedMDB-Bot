@@ -1,7 +1,7 @@
-import { WebhookData } from './../types/movie-types';
+import type { WebhookData } from './../types/movie-types';
 import express, { NextFunction, Request, Response } from 'express';
-import BotClient from './client';
-import { Server } from 'http';
+import type BotClient from './client';
+import type { Server } from 'http';
 
 const app = express();
 const port = 3100;
@@ -70,13 +70,14 @@ class APIClient {
     });
   }
 
-  auth(req: Request, res: Response, next: NextFunction, apiClient: this) {
+  auth(req: Request, res: Response, next: NextFunction, apiClient: this): void {
     if (!apiClient) return;
     if (req.headers.authorization !== `Bearer ${process.env.WEBHOOK_TOKEN}`) {
       apiClient.client.logger.error(
         'Unauthorized request made to webhook interface'
       );
-      return res.status(401).send('Unauthorized');
+      res.status(401).send('Unauthorized');
+      return;
     }
     next();
   }

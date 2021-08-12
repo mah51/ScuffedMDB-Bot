@@ -1,13 +1,13 @@
 import { time } from '@discordjs/builders';
-import { MessageEmbed, TextChannel, User } from 'discord.js';
-import {
+import { MessageEmbed, TextChannel } from 'discord.js';
+import type {
   MovieType,
   WebhookData,
   UserAuthType,
   ReviewType,
 } from './../types/movie-types';
-import BotClient from '../structures/client';
-import config from '../config.json';
+import type BotClient from '../structures/client';
+import config from '../../config.json';
 import millify from 'millify';
 
 export async function run(client: BotClient, data: WebhookData) {

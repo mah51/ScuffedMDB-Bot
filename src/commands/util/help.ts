@@ -1,5 +1,5 @@
-import type { BotCommand, HelpObj } from '../../structures/commandHandler';
-import { Collection, MessageEmbed } from 'discord.js';
+import type { HelpObj } from '../../structures/commandHandler';
+import { MessageEmbed } from 'discord.js';
 import type BotClient from '../../structures/client';
 import type { Message, PermissionString } from 'discord.js';
 import type { CommandData } from '../../structures/commandHandler';
@@ -11,10 +11,6 @@ export async function run(
   { prefix }: CommandData
 ) {
   if (!args[1]) {
-    let commands: Collection<string, BotCommand>;
-    if (message.author.id !== client.config.ownerID) {
-      commands = client.commands.filter((c) => c.help.private!);
-    }
     const embed = new MessageEmbed()
       .setColor(client.config.embedColor)
       .setFooter(

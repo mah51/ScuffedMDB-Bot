@@ -1,4 +1,4 @@
-import * as config from '../config.json';
+import * as config from '../../config.json';
 import CommandHandler from './commandHandler';
 import { Client, Collection } from 'discord.js';
 import type { Snowflake } from 'discord.js';

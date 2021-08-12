@@ -1,10 +1,10 @@
 import type { Message } from 'discord.js';
-import BotClient from '../structures/client';
+import type BotClient from '../structures/client';
 
 export async function run(client: BotClient, message: Message) {
   if (message.author.bot || (message.guild && !message.guild.available)) return;
   const prefix = message.guild
-    ? await client.functions.getPrefix(client, message.guild.id)
+    ? await client.functions.getPrefix()
     : client.config.prefix;
   const regexp = new RegExp(`^<@!?${message.client.user!.id}>`);
   if (

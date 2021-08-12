@@ -1,7 +1,7 @@
-import { TextChannel } from 'discord.js';
-import { WebhookData } from './../types/movie-types';
-import BotClient from '../structures/client';
-import config from '../config.json';
+import type { TextChannel } from 'discord.js';
+import type { WebhookData } from './../types/movie-types';
+import type BotClient from '../structures/client';
+import config from '../../config.json';
 import { editReviewEmbed } from './reviewCreate';
 
 export async function run(client: BotClient, data: WebhookData) {

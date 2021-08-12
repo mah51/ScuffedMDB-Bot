@@ -1,8 +1,8 @@
 import { MessageEmbed, Permissions } from 'discord.js';
-import { WebhookData } from './../types/movie-types';
+import type { WebhookData } from './../types/movie-types';
 import { time } from '@discordjs/builders';
-import BotClient from '../structures/client';
-import config from '../config.json';
+import type BotClient from '../structures/client';
+import config from '../../config.json';
 import millify from 'millify';
 
 export async function run(client: BotClient, data: WebhookData) {
@@ -93,7 +93,7 @@ export async function run(client: BotClient, data: WebhookData) {
       },
       {
         name: 'Release Date',
-        value: time(new Date(releaseDate)),
+        value: time(new Date(releaseDate), 'd'),
         inline: true,
       },
       {

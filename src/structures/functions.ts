@@ -1,6 +1,5 @@
 import type {
   Message,
-  Snowflake,
   PermissionString,
   GuildChannel,
   TextChannel,
@@ -9,8 +8,7 @@ import type {
 import type { GuildMessage } from '../constants';
 import { parsedPerms } from '../constants';
 import { MessageEmbed, Util } from 'discord.js';
-import { embedColor } from '../config.json';
-import type BotClient from './client';
+import { embedColor } from '../../config.json';
 
 export class Functions {
   public noArg(
@@ -87,7 +85,7 @@ export class Functions {
     message.channel.send({ embeds: [embed] });
   }
 
-  public async getPrefix(client: BotClient, id: Snowflake): Promise<string> {
+  public async getPrefix(): Promise<string> {
     return '!';
   }
 
