@@ -1,5 +1,6 @@
-import { MessageEmbed } from 'discord.js';
+import { MessageEmbed, Permissions } from 'discord.js';
 import { WebhookData } from './../types/movie-types';
+import { time } from '@discordjs/builders';
 import BotClient from '../structures/client';
 import config from '../config.json';
 import millify from 'millify';
@@ -8,12 +9,52 @@ export async function run(client: BotClient, data: WebhookData) {
   const { movie } = data;
   const movieName = movie.name[0].toUpperCase() + movie.name.slice(1);
   const server = await client.guilds.fetch(config.serverID);
+  if (!server)
+    return client.logger.error(
+      'Cannot find server with ID: ' + config.serverID
+    );
+
+  const members = await server.members.fetch();
+  const membersWithRole = members.filter((member) =>
+    member.roles.cache.get(config.reviewedRoleID) ? true : false
+  );
+  await membersWithRole?.each(async (member) => {
+    await member.roles
+      .remove(config.reviewedRoleID)
+      .catch((err) =>
+        client.logger.error(
+          `Could not remove reviewed role from ${member.user.tag}\n${err}`
+        )
+      );
+  });
+
   const channel = await server.channels.create(movieName, {
     topic: movie._id,
     parent: config.categoryID,
     reason: `${movieName} was created and the webhook was fired.`,
     position: 1,
+    permissionOverwrites: [
+      {
+        id: server.roles.everyone.id,
+        deny: [Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.VIEW_CHANNEL],
+      },
+      {
+        id:
+          config.reviewedRoleID ||
+          server.roles.cache.find((role) => role.name === 'Reviewed')?.id ||
+          '',
+        allow: [Permissions.FLAGS.VIEW_CHANNEL],
+      },
+      {
+        id: client.user!.id,
+        allow: [
+          Permissions.FLAGS.SEND_MESSAGES,
+          Permissions.FLAGS.VIEW_CHANNEL,
+        ],
+      },
+    ],
   });
+
   const releaseDate = new Date(movie.releaseDate);
   const revenue = movie.revenue > 0 ? `$${millify(movie.revenue)}` : 'N/A';
   const budget = movie.budget > 0 ? `$${millify(movie.budget)}` : 'N/A';
@@ -52,14 +93,7 @@ export async function run(client: BotClient, data: WebhookData) {
       },
       {
         name: 'Release Date',
-        value:
-          '`' +
-          releaseDate.getUTCDate() +
-          '/' +
-          (releaseDate.getMonth() + 1) +
-          '/' +
-          releaseDate.getUTCFullYear() +
-          '`',
+        value: time(new Date(releaseDate)),
         inline: true,
       },
       {
@@ -74,6 +108,40 @@ export async function run(client: BotClient, data: WebhookData) {
     )
     .setTimestamp();
 
-  const message = await channel.send({ embeds: [embed] });
-  await message.pin();
+  const reviewEmbed = new MessageEmbed()
+    .setColor(client.config.embedColor)
+    .setAuthor(`${movieName} Reviews`)
+    .setTitle(`\`N / A\``)
+    .setDescription(`This movie does not have any reviews yet`)
+    .setTimestamp()
+    .setFields(
+      { name: 'Group Score', value: `\`${movie.rating}\``, inline: true },
+      { name: 'Total Reviews', value: `\`${movie.numReviews}\``, inline: true },
+      {
+        name: 'World wide',
+        value: `\`${movie.voteAverage} - ${millify(movie.voteCount)} votes\``,
+        inline: true,
+      }
+    );
+
+  await channel.send({ embeds: [embed] });
+  const reviewMessage = await channel.send({ embeds: [reviewEmbed] });
+  await reviewMessage.startThread({
+    name: `reviews`,
+    autoArchiveDuration: server.features.includes('SEVEN_DAY_THREAD_ARCHIVE')
+      ? 10080
+      : server.features.includes('THREE_DAY_THREAD_ARCHIVE')
+      ? 4320
+      : 1440,
+    reason: `Adding review thread to ${movieName} channel`,
+  });
+  await channel.threads.create({
+    name: `discussion`,
+    autoArchiveDuration: server.features.includes('SEVEN_DAY_THREAD_ARCHIVE')
+      ? 10080
+      : server.features.includes('THREE_DAY_THREAD_ARCHIVE')
+      ? 4320
+      : 1440,
+    reason: `Adding discussion thread to ${movieName} Channel`,
+  });
 }
