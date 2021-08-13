@@ -13,6 +13,12 @@ class APIClient {
   connections: any[];
 
   constructor(client: BotClient) {
+    if (!process.env.WEBHOOK_TOKEN) {
+      throw new Error(
+        'APIClient requires a WEBHOOK_TOKEN which can be set in the .env file'
+      );
+    }
+
     this.app = app;
 
     this.client = client;

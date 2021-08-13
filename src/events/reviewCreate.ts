@@ -12,7 +12,7 @@ import millify from 'millify';
 
 export async function run(client: BotClient, data: WebhookData) {
   const { movie, user, review } = data;
-
+  console.log(review);
   // Forming the embed to be sent with the review data
   const embed = new MessageEmbed()
     .setAuthor(`${user.username}#${user.discriminator}`, user.image)
@@ -21,7 +21,9 @@ export async function run(client: BotClient, data: WebhookData) {
     .setDescription(`${review.comment}`)
     .setURL(process.env.WEB_URL + '/movie/' + movie._id)
     .setThumbnail(movie.image || '')
-    .setFooter(review._id)
+    .setFooter(
+      typeof review?._id === 'string' ? review?._id : 'Why this no work'
+    )
     .setTimestamp()
     .setFields(
       { name: 'Group Score', value: `\`${movie.rating}\``, inline: true },
@@ -37,7 +39,9 @@ export async function run(client: BotClient, data: WebhookData) {
 
   const member = await server.members.fetch(user.discord_id);
 
-  await member?.roles.add(config.reviewedRoleID);
+  if (member) {
+    await member?.roles.add(config.reviewedRoleID);
+  }
 
   // Retrieving channel
   let channel = (await server.channels.cache.find(
@@ -90,7 +94,7 @@ export async function run(client: BotClient, data: WebhookData) {
       (thread) => thread.name === 'reviews'
     );
   }
-
+  await editReviewEmbed(channel, client, movie, user);
   // reopen thread if it invalidated
   if (reviewThread?.archived) {
     await reviewThread.setArchived(false);
