@@ -12,7 +12,6 @@ import millify from 'millify';
 
 export async function run(client: BotClient, data: WebhookData) {
   const { movie, user, review } = data;
-  console.log(review);
   // Forming the embed to be sent with the review data
   const embed = new MessageEmbed()
     .setAuthor(`${user.username}#${user.discriminator}`, user.image)

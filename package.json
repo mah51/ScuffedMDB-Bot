@@ -4,8 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "nodemon .",
+    "build": "npx tsc",
+    "start": "npx node .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

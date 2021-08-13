@@ -5,4 +5,4 @@ COPY package.json /usr/src/bot
 RUN npm install
 COPY . /usr/src/bot
 RUN npm run build
-CMD ["node", "dist/index.js"]
+RUN npm run start

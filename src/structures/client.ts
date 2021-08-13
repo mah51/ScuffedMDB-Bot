@@ -28,7 +28,7 @@ export default class BotClient extends Client {
 
   public apiClient = new APIClient(this);
 
-  public logger = new Logger();
+  public logger = new Logger(this);
 
   public events = new Collection<string, BotEvent>();
 
