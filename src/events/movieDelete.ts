@@ -18,7 +18,7 @@ export async function run(client: BotClient, data: WebhookData) {
         'Could not find a channel with the movie_id in the topic.'
       );
     }
-    channel?.delete(`${data.movie.name} was deleted on site`);
+    await channel?.delete(`${data.movie.name} was deleted on site`);
   } catch (e) {
     client.logger.error('Could not delete channel on movieDelete');
   }
