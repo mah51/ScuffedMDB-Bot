@@ -2,7 +2,8 @@
 
 Configuration:
 
-```json
+config.json
+```js
 {
   //version of the bot
   "version": "1.0.0",
