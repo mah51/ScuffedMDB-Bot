@@ -11,6 +11,7 @@ This is a discord bot for the [ScuffedMDB](https://www.github.com/mah51/scuffedm
 - Movie Added
 
 _Channel creation under specified category_
+
 ![image](https://user-images.githubusercontent.com/47287285/129364735-b6ad1d16-2ac3-4e75-a186-d88961ff6be1.png)
 
 - Movie Deleted
@@ -22,6 +23,7 @@ _Channel Deletion_
 - Review Added
   
   _Embed added to review thread under movie channel_
+  
 ![image](https://user-images.githubusercontent.com/47287285/129364908-e340ad9c-fa78-48b2-ad73-249bb0132320.png)
 
 - Review Modified
