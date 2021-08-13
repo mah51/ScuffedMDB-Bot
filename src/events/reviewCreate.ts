@@ -82,11 +82,7 @@ export async function run(client: BotClient, data: WebhookData) {
     client.logger.warn(`Thread not found for ${movie.name} creating one now`);
     channel.threads.create({
       name: `reviews`,
-      autoArchiveDuration: server.features.includes('SEVEN_DAY_THREAD_ARCHIVE')
-        ? 10080
-        : server.features.includes('THREE_DAY_THREAD_ARCHIVE')
-        ? 4320
-        : 1440,
+      autoArchiveDuration: 'MAX',
       reason: `Adding review thread to ${movie.name} channel`,
     });
     reviewThread = channel.threads.cache.find(
