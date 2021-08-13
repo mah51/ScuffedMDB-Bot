@@ -66,7 +66,10 @@ export async function run(client: BotClient, data: WebhookData) {
     .setDescription(movie.description || '')
     .setImage(movie.image || '')
     .addFields(
-      { name: 'Tagline', value: `\`${movie.tagLine}\`` || '' },
+      {
+        name: 'Tagline',
+        value: `\`${movie.tagLine ? movie.tagLine : 'No tagline'}\`` || '',
+      },
       {
         name: 'Genres',
         value: `\`${genres}\``,
