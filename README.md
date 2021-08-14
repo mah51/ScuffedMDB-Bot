@@ -95,6 +95,7 @@ config.json
 }
 ```
 
+Copy .env.example, rename to .env and fill in the values.
 .env
 
 ```txt
