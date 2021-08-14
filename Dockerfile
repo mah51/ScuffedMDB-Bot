@@ -5,4 +5,3 @@ COPY package.json /usr/src/bot
 RUN npm install
 COPY . /usr/src/bot
 RUN npm run build
-RUN npm run start
