@@ -21,18 +21,18 @@ _Channel Deletion_
 #### Review Actions
 
 - Review Added
-  
+
   _Embed added to review thread under movie channel_
-  
+
 ![image](https://user-images.githubusercontent.com/47287285/129364908-e340ad9c-fa78-48b2-ad73-249bb0132320.png)
 
 - Review Modified
-  
- _Embed updated_
-  
+
+_Embed updated_
+
 - Review Deleted
-   
- _Embed removed from thread_
+
+_Embed removed from thread_
 
 #### User Actions
 
@@ -49,6 +49,14 @@ WIP
 WIP
 
 ## Set this up for your server
+
+First go to the developer panel on discord and create a new application, then under the Bot tab create a new bot and save the bot token for later.
+
+To invite the bot to a server of your choice, insert your client id found under the general information tab of the discord developer panel, to the following URL and then visit it on your browser.
+
+`https://discord.com/api/oauth2/authorize?client_id=<CLIENT_ID>&permissions=8&scope=bot%20applications.commands`
+
+Select the server you want the bot in, and job done!
 
 Download files:
 

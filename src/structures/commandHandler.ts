@@ -1,7 +1,13 @@
+import type { SlashCommandBuilder } from '@discordjs/builders';
 import { Collection } from 'discord.js';
 import { readdirSync } from 'fs';
 import type { Client, Message, PermissionString } from 'discord.js';
 import path from 'path';
+import type { APIApplicationCommandOption } from 'discord-api-types';
+import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v9';
+import type BotClient from './client';
+import config from '../../config.json';
 
 type CommandCategory = 'Utility';
 
@@ -19,9 +25,15 @@ export interface CommandData {
   prefix: string;
 }
 
+export interface Interaction {
+  name: string;
+  description: string;
+  options: APIApplicationCommandOption[];
+}
 export interface BotCommand {
   help: HelpObj;
   memberPerms: PermissionString[];
+  data: SlashCommandBuilder;
   permissions: PermissionString[];
   run: (
     client: Client,
@@ -33,9 +45,12 @@ export interface BotCommand {
 
 export default class CommandHandler extends Collection<string, BotCommand> {
   commandArray: { name: string; description: string }[][];
-  public constructor() {
+  interactionArray: Interaction[];
+  client: BotClient;
+  public constructor(bot: BotClient) {
     super();
-
+    this.client = bot;
+    this.interactionArray = [];
     this.rawCategories = readdirSync(path.resolve(__dirname, '../commands/'));
     this.commandArray = this.rawCategories.map((c) =>
       readdirSync(path.resolve(__dirname, `../commands/${c}`)).map((cmd) => {
@@ -50,12 +65,46 @@ export default class CommandHandler extends Collection<string, BotCommand> {
         if (!this.categories.includes(command.help.category)) {
           this.categories.push(command.help.category);
         }
+        this.interactionArray.push(command.data.toJSON());
         return {
           name: cmd[0].toUpperCase() + cmd.slice(1).slice(0, -3),
           description: command.help.desc,
         };
       })
     );
+
+    const rest = new REST({ version: '9' }).setToken(
+      process.env.BOT_TOKEN as string
+    );
+
+    (async () => {
+      try {
+        console.log('Started refreshing application (/) commands.');
+        if (!process.env.CLIENT_ID) {
+          throw new Error('CLIENT_ID not set in .env');
+        }
+        if (!config.serverID) {
+          throw new Error('serverID not set in config.json');
+        }
+
+        await rest.put(
+          Routes.applicationGuildCommands(
+            process.env.CLIENT_ID,
+            config.serverID
+          ),
+          {
+            //@ts-ignore
+            body: this.interactionArray,
+          }
+        );
+
+        console.log('Successfully reloaded application (/) commands.');
+      } catch (error) {
+        //@ts-ignore
+
+        console.log(error);
+      }
+    })();
   }
 
   public aliases: { [alias: string]: string } = {};

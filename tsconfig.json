@@ -2,6 +2,8 @@
   "extends": "@sapphire/ts-config",
   "compilerOptions": {
     "outDir": "./dist",
+    "types": ["node"],
+    "lib": ["dom", "ESNext"],
     "resolveJsonModule": true,
     "declaration": false,
     "declarationMap": false,

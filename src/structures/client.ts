@@ -19,7 +19,7 @@ export interface BotEvent {
 }
 
 export default class BotClient extends Client {
-  public commands = new CommandHandler();
+  public commands = new CommandHandler(this);
 
   public config: ConfigObject = {
     ...config,
