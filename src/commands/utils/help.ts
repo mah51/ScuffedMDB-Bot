@@ -1,31 +1,22 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
 import type { HelpObj } from '../../structures/commandHandler';
-import { Interaction, MessageEmbed, User } from 'discord.js';
+import { MessageEmbed } from 'discord.js';
 import type BotClient from '../../structures/client';
 import type { Message, PermissionString } from 'discord.js';
-
-export const data = new SlashCommandBuilder()
-  .setDescription('Shows the help for a command.')
-  .setName('help');
+import type { CommandData } from '../../structures/commandHandler';
 
 export async function run(
   client: BotClient,
-  payload: Message | Interaction,
+  message: Message,
   args: string[],
-  type: 'message' | 'interaction'
+  { prefix }: CommandData
 ) {
-  const data =
-    type === 'interaction' ? (payload as Interaction) : (payload as Message);
-  let user: User;
-  if (type === 'interaction') {
-    user = (payload as Interaction).user;
-  } else {
-    user = (payload as Message).author;
-  }
   if (!args[1]) {
     const embed = new MessageEmbed()
       .setColor(client.config.embedColor)
-      .setFooter(`Requested by ${user.tag}`, user.displayAvatarURL())
+      .setFooter(
+        `Requested by ${message.author.tag}`,
+        message.author.displayAvatarURL()
+      )
       .setTimestamp()
       .setAuthor('Commands List', client?.user?.displayAvatarURL());
 
@@ -37,18 +28,13 @@ export async function run(
       if (field)
         embed.fields[embed.fields.indexOf(field)].value += `\n- \`${
           //@ts-ignore
-          client.config.prefix + cmdInfo
+          prefix + cmdInfo
         }\``;
       //@ts-ignore
-      else
-        embed.addField(
-          info.category,
-          `- \`${client.config.prefix + cmdInfo}\``,
-          true
-        );
+      else embed.addField(info.category, `- \`${prefix + cmdInfo}\``, true);
     });
 
-    return data.channel!.send({ embeds: [embed] });
+    return message.channel.send({ embeds: [embed] });
   }
 
   const query = args.slice(1).join(' ').toLowerCase();
@@ -57,7 +43,7 @@ export async function run(
     !client.commands.categories.some((c) => c.toLowerCase() === query)
   )
     return client.functions.badArg(
-      data as Message,
+      message,
       1,
       'The query provided was neither a category or a command.'
     );
@@ -69,7 +55,7 @@ export async function run(
         {
           inline: true,
           name: 'Usage',
-          value: client.config.prefix + cmd.help.usage,
+          value: prefix + cmd.help.usage,
         },
         {
           inline: true,
@@ -84,18 +70,19 @@ export async function run(
       ])
       .setColor(client.config.embedColor)
       .setDescription(cmd.help.desc)
-      .setFooter('[Arg] = Optional | <Arg> = Required', user.displayAvatarURL())
-      .setTitle(`${client.config.prefix + query} Command Information`);
+      .setFooter(
+        '[Arg] = Optional | <Arg> = Required',
+        message.author.displayAvatarURL()
+      )
+      .setTitle(`${prefix + query} Command Information`);
     if (cmd.help.aliases.length !== 0)
       embed.addField(
         'Aliases',
-        cmd.help.aliases
-          .map((alias) => `\`${client.config.prefix + alias}\``)
-          .join(', '),
+        cmd.help.aliases.map((alias) => `\`${prefix + alias}\``).join(', '),
         true
       );
 
-    return await data.channel!.send({ embeds: [embed] });
+    return message.channel.send({ embeds: [embed] });
   }
 
   const category = client.commands.categories.find(
@@ -106,17 +93,15 @@ export async function run(
   );
   const embed = new MessageEmbed()
     .setColor(client.config.embedColor)
-    .setDescription(
-      cCommands.map((c) => `- \`${client.config.prefix + c}\``).join('\n')
-    )
+    .setDescription(cCommands.map((c) => `- \`${prefix + c}\``).join('\n'))
     .setFooter(
-      `${cCommands.size} Category Commands | Requested by ${user.tag}`,
-      user.displayAvatarURL()
+      `${cCommands.size} Category Commands | Requested by ${message.author.tag}`,
+      message.author.displayAvatarURL()
     )
     .setTimestamp()
     .setTitle(`${category} Category Information`);
 
-  await data.channel!.send({ embeds: [embed] });
+  message.channel.send({ embeds: [embed] });
 }
 
 export const help: HelpObj = {
