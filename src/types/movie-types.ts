@@ -22,11 +22,12 @@ export interface MovieType<T = ReviewType[]> {
 }
 
 export interface WebhookData {
-  type: 'movie' | 'review';
-  action: 'added' | 'modified' | 'deleted';
+  type: 'movie' | 'review' | 'user';
+  action: 'added' | 'modified' | 'deleted' | 'banned';
   user: UserAuthType;
   movie: MovieType<ReviewType<string>[]> | MovieType;
   review: ReviewType<string | PopulatedUserType>;
+  ban: { reason: string; user: UserAuthType };
 }
 
 export interface ReviewType<T = PopulatedUserType> {

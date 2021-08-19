@@ -56,6 +56,18 @@ class APIClient {
 
         return res.status(200).send('success');
       });
+      app.post('/api/event/user', (req, res) => {
+        const data = req.body as WebhookData;
+        if (data.action === 'added') {
+          this.client.emit('userCreate', data);
+        } else if (data.action === 'banned') {
+          this.client.emit('userBan', data);
+        } else {
+          return res.status(403).send('unknown action');
+        }
+
+        return res.status(200).send('success');
+      });
 
       this.server = app.listen(port, () => {
         this.client.logger.success(
