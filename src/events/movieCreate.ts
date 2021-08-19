@@ -5,7 +5,11 @@ import type BotClient from '../structures/client';
 import config from '../../config.json';
 import millify from 'millify';
 
-export async function run(client: BotClient, data: WebhookData) {
+export async function run(
+  client: BotClient,
+  data: WebhookData,
+  fromReview?: boolean
+) {
   const { movie } = data;
   const movieName = movie.name[0].toUpperCase() + movie.name.slice(1);
   const server = await client.guilds.fetch(config.serverID);
@@ -14,19 +18,22 @@ export async function run(client: BotClient, data: WebhookData) {
       'Cannot find server with ID: ' + config.serverID
     );
 
-  const members = await server.members.fetch();
-  const membersWithRole = members.filter((member) =>
-    member.roles.cache.get(config.reviewedRoleID) ? true : false
-  );
-  await membersWithRole?.each(async (member) => {
-    await member.roles
-      .remove(config.reviewedRoleID)
-      .catch((err) =>
-        client.logger.error(
-          `Could not remove reviewed role from ${member.user.tag}\n${err}`
-        )
-      );
-  });
+  //Only remove reviewed role if movie is created from movieCreate event, not reviewCreate event
+  if (!fromReview) {
+    const members = await server.members.fetch();
+    const membersWithRole = members.filter((member) =>
+      member.roles.cache.get(config.reviewedRoleID) ? true : false
+    );
+    await membersWithRole?.each(async (member) => {
+      await member.roles
+        .remove(config.reviewedRoleID)
+        .catch((err) =>
+          client.logger.error(
+            `Could not remove reviewed role from ${member.user.tag}\n${err}`
+          )
+        );
+    });
+  }
 
   const channel = await server.channels.create(movieName, {
     topic: movie._id,

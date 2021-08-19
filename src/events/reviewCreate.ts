@@ -52,12 +52,13 @@ export async function run(client: BotClient, data: WebhookData) {
     client.logger.warn(
       `Could not find channel for ${movie._id}, I am creating one now...`
     );
-    client.emit('movieCreate', data);
-    channel = (await server.channels.cache.find(
+    client.emit('movieCreate', data, true);
+    const channels = await server.channels.fetch();
+    channel = channels.find(
       (channel) =>
         channel.type === 'GUILD_TEXT' &&
         (channel as TextChannel).topic === movie._id
-    )) as TextChannel;
+    ) as TextChannel;
   }
 
   // Allowing user to view channel
