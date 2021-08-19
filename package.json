@@ -10,7 +10,7 @@
     "release": "standard-version",
     "prepare": "husky install",
     "pre-commit": "npm run lint",
-    "lint": "npx eslint . --fix && npx tsc"
+    "lint": "npx eslint ./index.ts --fix && npx tsc"
   },
   "author": "",
   "license": "ISC",
